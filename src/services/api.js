@@ -65,16 +65,6 @@ export const userAPI = {
       throw error;
     }
   },
-
-  getUserProfile: async (googleId) => {
-    try {
-      const response = await api.get(`${API_ENDPOINTS.USERS}/${googleId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      throw error;
-    }
-  },
 };
 
 // Auth related API calls
@@ -91,3 +81,4 @@ export const authAPI = {
 };
 
 export default api;
+
