@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export const API_ENDPOINTS = {
   BASE_URL: API_BASE_URL,
@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
   DIET: '/diet',
   REVIEWS: '/reviews'
 };
+
 
 export const STORAGE_KEYS = {
   TOKEN: 'googleToken',
