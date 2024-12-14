@@ -1,5 +1,7 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com/api';
+
 export const API_ENDPOINTS = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com/api',
+  BASE_URL: API_BASE_URL,
   USERS: '/users',
   AUTH: '/auth',
   POSTS: '/posts',
@@ -14,29 +16,19 @@ export const STORAGE_KEYS = {
   USER_DATA: 'userData'
 };
 
-export const DIET_PLANS = [
-  {
-    id: 'weight-loss',
-    title: 'Weight Loss Plan',
-    description: 'Calorie-deficit diet focused on lean proteins and vegetables',
-    calories: 1500
-  },
-  {
-    id: 'maintenance',
-    title: 'Maintenance Plan',
-    description: 'Balanced diet to maintain current weight',
-    calories: 2000
-  },
-  {
-    id: 'muscle-gain',
-    title: 'Muscle Gain Plan',
-    description: 'High-protein diet with calorie surplus to gain weight',
-    calories: 2500
-  }
-];
+export const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500
+};
 
-export const WORKOUT_LEVELS = {
-  BEGINNER: 'beginner',
-  INTERMEDIATE: 'intermediate',
-  ADVANCED: 'advanced'
+export const ERROR_MESSAGES = {
+  NETWORK_ERROR: 'Network error occurred. Please check your connection.',
+  AUTH_ERROR: 'Authentication failed. Please try again.',
+  SERVER_ERROR: 'Server error occurred. Please try again later.',
+  NOT_FOUND: 'Resource not found.',
+  VALIDATION_ERROR: 'Validation error occurred.'
 };

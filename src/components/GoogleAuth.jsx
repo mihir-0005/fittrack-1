@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
-import { saveUserProfile } from '../services/api';
+import { userAPI } from '../services/api';
 
 const AuthContainer = styled.div`
   display: flex;
@@ -18,53 +18,54 @@ const fetchUserProfile = async (accessToken) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      console.error('Failed to fetch user profile:', response.statusText);
-      return null;
+    if (!response.ok) {
+      throw new Error('Failed to fetch user profile from Google');
     }
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    return null;
+    console.error('Error fetching Google profile:', error);
+    throw error;
   }
 };
 
 const GoogleAuth = () => {
   const navigate = useNavigate();
 
-  const handleSuccess = async (accessToken) => {
+  const handleSuccess = async (tokenResponse) => {
     try {
+      const accessToken = tokenResponse.access_token;
       const userProfile = await fetchUserProfile(accessToken);
       
-      if (userProfile) {
-        // Transform Google profile data to match our User model
-        const userData = {
-          googleId: userProfile.id,
-          email: userProfile.email,
-          name: userProfile.name,
-          picture: userProfile.picture,
-        };
-
-        // Save user data to MongoDB
-        await saveUserProfile(userData);
-
-        // Store necessary data in localStorage
-        localStorage.setItem('userData', JSON.stringify(userData));
-        localStorage.setItem('googleToken', accessToken);
-
-        // Reload the page to trigger the onboarding check
-        window.location.reload();
+      if (!userProfile) {
+        throw new Error('Failed to fetch user profile');
       }
+
+      // Transform Google profile data
+      const userData = {
+        googleId: userProfile.id,
+        email: userProfile.email,
+        name: userProfile.name,
+        picture: userProfile.picture,
+      };
+
+      // Save user data to MongoDB
+      await userAPI.saveProfile(userData);
+
+      // Store necessary data in localStorage
+      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('googleToken', accessToken);
+
+      // Reload the page to trigger the onboarding check
+      window.location.reload();
     } catch (error) {
-      console.error('Error during authentication:', error);
+      console.error('Authentication error:', error);
+      // You might want to show an error message to the user here
     }
   };
 
   const login = useGoogleLogin({
-    onSuccess: (response) => handleSuccess(response.access_token),
-    onError: () => console.error('Login Failed'),
+    onSuccess: handleSuccess,
+    onError: () => console.error('Google login failed'),
     scope: `
       email profile 
       https://www.googleapis.com/auth/fitness.activity.read 
