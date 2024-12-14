@@ -1,0 +1,5 @@
+npm i style-components
+npm install lucide-react  
+npm install @react-oauth/google
+
+
