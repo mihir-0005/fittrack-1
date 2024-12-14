@@ -17,7 +17,6 @@ import workoutRoutes from './routes/workoutRoutes.js';
 
 // Middleware and Config
 import { errorHandler } from './middleware/errorHandler.js';
-import { corsMiddleware, helmetMiddleware, cspMiddleware } from './middleware/security/index.js';
 import connectDatabase from './config/database.js';
 import sessionConfig from './config/security/sessionConfig.js';
 
@@ -27,11 +26,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Apply security middlewares
-app.use(helmetMiddleware);
-app.use(corsMiddleware);
-app.use(cspMiddleware);
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
