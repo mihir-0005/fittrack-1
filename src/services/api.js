@@ -5,9 +5,9 @@ import { API_ENDPOINTS } from '../utils/constants';
 const api = axios.create({
   baseURL: API_ENDPOINTS.BASE_URL,
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
-  withCredentials: true // Important for CORS with credentials
+  withCredentials: true, // Important for CORS with credentials
 });
 
 // Request interceptor
@@ -66,7 +66,6 @@ export const userAPI = {
     }
   },
 
-  // Alias for `getProfile` (optional, based on your preference)
   getUserProfile: async (googleId) => {
     try {
       const response = await api.get(`${API_ENDPOINTS.USERS}/${googleId}`);
@@ -75,7 +74,7 @@ export const userAPI = {
       console.error('Error fetching user profile:', error);
       throw error;
     }
-  }
+  },
 };
 
 // Auth related API calls
@@ -88,7 +87,7 @@ export const authAPI = {
       console.error('Error verifying token:', error);
       throw error;
     }
-  }
+  },
 };
 
 export default api;
