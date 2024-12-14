@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/diet';
+const API_URL = 'https://fittrack-1-yefe.onrender.com/api/diet';
 
 export const createDietEntry = async (entry) => {
   try {
