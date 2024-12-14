@@ -31,7 +31,7 @@ const cspConfig = {
       "https://api.calorieninjas.com",
       "https://www.googleapis.com",
       "https://accounts.google.com",
-      "ws://localhost:5173"
+      "https://flourishing-basbousa-b3c0d9.netlify.app/"
     ],
     frameSrc: [
       "'self'",
