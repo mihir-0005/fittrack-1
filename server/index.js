@@ -37,37 +37,47 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Initialize database connection
-const dbConnection = await connectDatabase();
+const start = async () => {
+  try {
+    const dbConnection = await connectDatabase();
+    console.log('Database connected successfully');
 
-// Session configuration
-const mongoStore = MongoStore.create({
-  client: dbConnection.connection.getClient(),
-  collectionName: 'sessions',
-  ttl: 24 * 60 * 60 // 1 day
-});
+    // Session configuration
+    const mongoStore = MongoStore.create({
+      client: dbConnection.connection.getClient(),
+      collectionName: 'sessions',
+      ttl: 24 * 60 * 60 // 1 day
+    });
 
-app.use(session(sessionConfig(mongoStore)));
+    app.use(session(sessionConfig(mongoStore)));
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+    // Serve uploaded files
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
-app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api', imageRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/challenges', challengeRoutes);
-app.use('/api/workouts', workoutRoutes);
-app.use('/api/diet', dietRoutes);
+    // Routes
+    app.use('/api/users', userRoutes);
+    app.use('/api/auth', authRoutes);
+    app.use('/api', imageRoutes);
+    app.use('/api/posts', postRoutes);
+    app.use('/api/reviews', reviewRoutes);
+    app.use('/api/challenges', challengeRoutes);
+    app.use('/api/workouts', workoutRoutes);
+    app.use('/api/diet', dietRoutes);
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
+    app.get('/api/health', (req, res) => {
+      res.json({ status: 'ok' });
+    });
 
-// Error handling
-app.use(errorHandler);
+    // Error handling
+    app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+start();
