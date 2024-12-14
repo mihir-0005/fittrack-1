@@ -4,6 +4,8 @@ import MongoStore from 'connect-mongo';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import cors from 'cors';
+import corsConfig from './config/corsConfig.js';
 
 // Routes
 import userRoutes from './routes/userRoutes.js';
@@ -19,14 +21,6 @@ import workoutRoutes from './routes/workoutRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import connectDatabase from './config/database.js';
 
-import cors from 'cors';
-import corsConfig from './config/corsConfig.js';  // Import the corsConfig
-
-
-
-// Apply CORS middleware
-
-
 dotenv.config();
 
 const app = express();
@@ -34,13 +28,15 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Apply CORS middleware before other middleware
 app.use(cors(corsConfig));
+
 // Connect to the database
 connectDatabase();
 
 // Body parsing middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Session middleware setup
 app.use(
@@ -51,6 +47,11 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
     }),
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
   })
 );
 
