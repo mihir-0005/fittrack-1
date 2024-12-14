@@ -4,7 +4,6 @@ import MongoStore from 'connect-mongo';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { configureSecurityMiddleware } from './middleware/security.js';
 
 // Routes
 import userRoutes from './routes/userRoutes.js';
@@ -19,6 +18,8 @@ import workoutRoutes from './routes/workoutRoutes.js';
 // Middleware and Config
 import { errorHandler } from './middleware/errorHandler.js';
 import connectDatabase from './config/database.js';
+import corsConfig from './config/corsConfig.js'; // Import CORS configuration
+import cors from 'cors'; // Import CORS middleware
 
 dotenv.config();
 
@@ -27,7 +28,47 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Apply security middleware
-configureSecurityMiddleware(app);
+// Connect to the database
+connectDatabase();
 
-app
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Session middleware setup
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+    }),
+  })
+);
+
+// Serve static files (if needed for frontend)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route setup
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/images', imageRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/challenges', challengeRoutes);
+app.use('/api/diets', dietRoutes);
+app.use('/api/workouts', workoutRoutes);
+
+// Error handling middleware
+app.use(errorHandler);
+
+// Default route to handle all other requests
+app.get('/', (req, res) => {
+  res.send('Welcome to the fitness API!');
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
