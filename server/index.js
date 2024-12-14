@@ -18,8 +18,7 @@ import workoutRoutes from './routes/workoutRoutes.js';
 // Middleware and Config
 import { errorHandler } from './middleware/errorHandler.js';
 import connectDatabase from './config/database.js';
-import corsConfig from './config/corsConfig.js'; // Import CORS configuration
-import cors from 'cors'; // Import CORS middleware
+
 
 dotenv.config();
 
