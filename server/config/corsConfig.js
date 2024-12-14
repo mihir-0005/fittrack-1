@@ -1,7 +1,9 @@
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const corsConfig = {
-  origin: ['https://flourishing-basbousa-b3c0d9.netlify.app'],
+  origin: isDevelopment 
+    ? 'http://localhost:3000' // Local development URL (or any local URL you want to use)
+    : 'https://flourishing-basbousa-b3c0d9.netlify.app', // Production URL
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
