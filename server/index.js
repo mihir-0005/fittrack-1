@@ -25,7 +25,7 @@ import corsConfig from './config/corsConfig.js';  // Import the corsConfig
 
 
 // Apply CORS middleware
-app.use(cors(corsConfig));
+
 
 dotenv.config();
 
@@ -34,6 +34,7 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use(cors(corsConfig));
 // Connect to the database
 connectDatabase();
 
