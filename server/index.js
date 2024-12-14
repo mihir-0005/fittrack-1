@@ -21,11 +21,7 @@ import { corsMiddleware, helmetMiddleware, cspMiddleware } from './middleware/se
 import connectDatabase from './config/database.js';
 import sessionConfig from './config/security/sessionConfig.js';
 
-
-
-
 dotenv.config();
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -69,6 +65,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Error handling
 app.use(errorHandler);
 
 app.listen(PORT, () => {
