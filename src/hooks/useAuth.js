@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProfile } from '../services/api';
+import { userAPI } from '../services/api';
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -18,7 +18,7 @@ export const useAuth = () => {
         }
 
         const { googleId } = JSON.parse(userData);
-        const response = await getProfile(googleId);
+        const response = await userAPI.getProfile(googleId);
         
         setUser(response.data);
         setIsAuthenticated(true);
