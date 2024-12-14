@@ -18,7 +18,6 @@ import workoutRoutes from './routes/workoutRoutes.js';
 // Middleware and Config
 import { errorHandler } from './middleware/errorHandler.js';
 import connectDatabase from './config/database.js';
-import sessionConfig from './config/security/sessionConfig.js';
 
 dotenv.config();
 
@@ -42,8 +41,6 @@ const start = async () => {
       collectionName: 'sessions',
       ttl: 24 * 60 * 60 // 1 day
     });
-
-    app.use(session(sessionConfig(mongoStore)));
 
     // Serve uploaded files
     app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
