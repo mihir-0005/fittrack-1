@@ -20,20 +20,14 @@ export const fetchGoogleProfile = async (accessToken) => {
 
 export const saveUserProfile = async (userData) => {
   try {
-    // Add error logging
-    console.log('Saving user profile:', userData);
-    console.log('API URL:', API_ENDPOINTS.BASE_URL);
-    
-    const response = await apiClient.post('/users', userData);
-    console.log('Save profile response:', response.data);
+    const response = await apiClient.post(`${API_ENDPOINTS.BASE_URL}/users`, userData);
     return response.data;
   } catch (error) {
-    // Improved error logging
     console.error('Error saving user profile:', {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status
     });
-    throw error;
+    throw new Error(error.response?.data?.message || 'Failed to save user profile');
   }
 };
