@@ -1,12 +1,12 @@
 export const API_ENDPOINTS = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com/api',
-  USERS: '/users',
-  AUTH: '/auth',
-  POSTS: '/posts',
-  CHALLENGES: '/challenges',
-  WORKOUTS: '/workouts',
-  DIET: '/diet',
-  REVIEWS: '/reviews'
+  BASE_URL: import.meta.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com',
+  USERS: '/api/users',
+  AUTH: '/api/auth',
+  POSTS: '/api/posts',
+  CHALLENGES: '/api/challenges',
+  WORKOUTS: '/api/workouts',
+  DIET: '/api/diet',
+  REVIEWS: '/api/reviews'
 };
 
 export const STORAGE_KEYS = {

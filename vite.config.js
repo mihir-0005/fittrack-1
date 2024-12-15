@@ -24,7 +24,7 @@ export default defineConfig({
       '/api': {
         target: process.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com',
         changeOrigin: true,
-        secure: false
+        secure: true
       }
     }
   }
