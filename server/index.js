@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import mongoose from 'mongoose'; // Required for MongoDB health check
+import mongoose from 'mongoose';
 import connectDatabase from './config/database.js';
 import corsConfig from './config/corsConfig.js';
 
@@ -33,8 +33,10 @@ const initializeServer = async () => {
     await connectDatabase();
     console.log('Database connection initialized');
 
-    // Middleware
+    // Apply CORS before other middleware
     app.use(cors(corsConfig));
+
+    // Middleware
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -46,18 +48,21 @@ const initializeServer = async () => {
         saveUninitialized: true,
         store: MongoStore.create({
           mongoUrl: process.env.MONGODB_URI,
-          ttl: 24 * 60 * 60, // 1 day
+          ttl: 24 * 60 * 60,
         }),
         cookie: {
           secure: process.env.NODE_ENV === 'production',
           sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-          maxAge: 24 * 60 * 60 * 1000 // 24 hours
+          maxAge: 24 * 60 * 60 * 1000
         }
       })
     );
 
-    // Serve static files (if needed for frontend)
-    app.use(express.static(path.join(__dirname, 'public')));
+    // Debug middleware for requests
+    app.use((req, res, next) => {
+      console.log(`${req.method} ${req.url}`);
+      next();
+    });
 
     // Routes
     app.use('/api/users', userRoutes);
@@ -77,11 +82,6 @@ const initializeServer = async () => {
       });
     });
 
-    // Default route for welcome message
-    app.get('/', (req, res) => {
-      res.send('Welcome to the fitness API!');
-    });
-
     // Error handling middleware
     app.use((err, req, res, next) => {
       console.error('Server error:', err);
@@ -94,7 +94,8 @@ const initializeServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log('Environment:', process.env.NODE_ENV);
-      console.log('MongoDB URI:', process.env.MONGODB_URI?.substring(0, 20) + '...');
+      console.log('Client URL:', process.env.CLIENT_URL);
+      console.log('MongoDB Status:', mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected');
     });
   } catch (error) {
     console.error('Failed to initialize server:', error);
