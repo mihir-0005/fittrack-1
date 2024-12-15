@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL  ;
 
 export const createChallenge = async (challengeData) => {
   try {
