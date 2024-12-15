@@ -9,11 +9,13 @@ export const fetchGoogleProfile = async (accessToken) => {
     });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch Google profile');
+      const errorData = await response.json();
+      console.error('Google API error:', errorData);
+      throw new Error(`Failed to fetch Google profile: ${errorData.error?.message || 'Unknown error'}`);
     }
     
     const data = await response.json();
-    console.log('Google profile data:', data); // Add logging
+    console.log('Google profile data:', data);
     return data;
   } catch (error) {
     console.error('Error fetching Google profile:', error);
@@ -22,10 +24,19 @@ export const fetchGoogleProfile = async (accessToken) => {
 };
 
 export const validateGoogleProfile = (profile) => {
-  console.log('Validating profile:', profile); // Add logging
-  if (!profile?.id || !profile?.email || !profile?.name) {
-    throw new Error('Invalid Google profile data');
+  console.log('Validating profile:', profile);
+  
+  if (!profile) {
+    throw new Error('Profile data is missing');
   }
+  
+  const requiredFields = ['id', 'email', 'name'];
+  const missingFields = requiredFields.filter(field => !profile[field]);
+  
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+  }
+  
   return true;
 };
 
@@ -36,6 +47,7 @@ export const prepareUserData = (profile) => {
     name: profile.name,
     picture: profile.picture,
   };
-  console.log('Prepared user data:', userData); // Add logging
+  
+  console.log('Prepared user data:', userData);
   return userData;
 };
