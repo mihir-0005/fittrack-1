@@ -6,6 +6,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true // Add this line
 });
 
 // Request interceptor
@@ -18,6 +19,7 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -27,7 +29,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error.response?.data || error.message);
-    return Promise.reject(error);
+    return Promise.reject(error.response?.data || error);
   }
 );
 
