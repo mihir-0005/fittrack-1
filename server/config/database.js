@@ -7,15 +7,13 @@ dotenv.config();
 const connectDatabase = async () => {
   try {
     console.log('Attempting to connect to MongoDB...');
-    
-    const connection = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+
+    // Establish connection
+    const connection = await mongoose.connect(process.env.MONGODB_URI);
 
     console.log(`MongoDB Connected: ${connection.connection.host}`);
-    
-    // Handle connection events
+
+    // Add connection event listeners
     mongoose.connection.on('error', (err) => {
       console.error('MongoDB connection error:', err);
     });
@@ -30,11 +28,11 @@ const connectDatabase = async () => {
 
     return connection;
   } catch (error) {
-    console.error('MongoDB connection error:', {
+    console.error('Failed to connect to MongoDB:', {
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
     });
-    process.exit(1);
+    process.exit(1); // Exit process with failure
   }
 };
 
