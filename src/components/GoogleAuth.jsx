@@ -27,7 +27,7 @@ const fetchUserProfile = async (accessToken) => {
     throw error;
   }
 };
-
+console.log(response)
 const GoogleAuth = () => {
   const navigate = useNavigate();
 
