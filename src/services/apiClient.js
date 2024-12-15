@@ -1,12 +1,9 @@
 import axios from 'axios';
-import { API_ENDPOINTS } from '../utils/constants';
+import { API_ENDPOINTS, API_CONFIG } from '../config/apiConfig';
 
 const apiClient = axios.create({
   baseURL: API_ENDPOINTS.BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true
+  ...API_CONFIG
 });
 
 // Request interceptor
@@ -28,13 +25,19 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Error:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
+
     if (error.response?.status === 401) {
       localStorage.removeItem('googleToken');
       localStorage.removeItem('userData');
       window.location.href = '/';
     }
-    console.error('API Error:', error.response?.data || error.message);
-    return Promise.reject(error.response?.data || error);
+
+    return Promise.reject(error);
   }
 );
 

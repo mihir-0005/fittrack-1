@@ -1,89 +1,73 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { useGoogleLogin } from '@react-oauth/google';
 import { LogIn } from 'lucide-react';
-import { fetchGoogleProfile, saveUserProfile } from '../services/authService';
-
-// Styled components
-const AuthContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0;
-`;
-
-const ErrorMessage = styled.div`
-  color: #ef4444;
-  margin-top: 0.5rem;
-  text-align: center;
-  font-size: 0.875rem;
-`;
+import { fetchGoogleProfile, validateGoogleProfile, prepareUserData } from '../services/auth/googleAuth';
+import { saveUserProfile } from '../services/auth/userAuth';
+import { AuthContainer, ErrorMessage, GoogleButton } from './styles/AuthStyles';
 
 const GoogleAuth = () => {
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSuccess = async (tokenResponse) => {
     try {
-      // Clear any existing error
+      setIsLoading(true);
       setError('');
+      
+      // Get access token
       const accessToken = tokenResponse.access_token;
+      if (!accessToken) {
+        throw new Error('No access token received');
+      }
 
-      console.log('Got access token:', accessToken);
-
-      // Fetch user profile from Google API
+      // Fetch Google profile
       const userProfile = await fetchGoogleProfile(accessToken);
       console.log('Got user profile:', userProfile);
 
-      if (!userProfile) {
-        throw new Error('Failed to fetch user profile');
-      }
+      // Validate profile data
+      validateGoogleProfile(userProfile);
 
-      // Prepare user data for saving
-      const userData = {
-        googleId: userProfile.id,
-        email: userProfile.email,
-        name: userProfile.name,
-        picture: userProfile.picture,
-      };
-
+      // Prepare user data
+      const userData = prepareUserData(userProfile);
       console.log('Saving user data:', userData);
 
-      // Save user data to the server or database
-      await saveUserProfile(userData);
-      console.log('Profile saved successfully');
+      // Save to backend
+      const savedUser = await saveUserProfile(userData);
+      console.log('User saved successfully:', savedUser);
 
-      // Store user data and token in local storage
+      // Store in localStorage
       localStorage.setItem('userData', JSON.stringify(userData));
       localStorage.setItem('googleToken', accessToken);
 
-      // Reload the page to reflect changes
-      window.location.reload();
+      // Redirect to home
+      window.location.href = '/home';
     } catch (error) {
       console.error('Authentication error:', error);
-      setError('Failed to sign in. Please try again.');
+      setError(error.message || 'Failed to sign in. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const login = useGoogleLogin({
     onSuccess: handleSuccess,
     onError: () => setError('Google sign in failed. Please try again.'),
-    scope: `
-      email profile 
-      https://www.googleapis.com/auth/fitness.activity.read 
-      https://www.googleapis.com/auth/fitness.heart_rate.read 
-      https://www.googleapis.com/auth/fitness.sleep.read
-    `.replace(/\s+/g, ' '),
+    scope: 'email profile https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.heart_rate.read https://www.googleapis.com/auth/fitness.sleep.read'
   });
 
   return (
     <AuthContainer>
       <div className="flex flex-col items-center">
-        <button
+        <GoogleButton
           onClick={() => login()}
-          className="flex items-center gap-2 bg-white text-gray-700 px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200"
+          disabled={isLoading}
+          className={`flex items-center gap-2 bg-white text-gray-700 px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 ${
+            isLoading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         >
           <LogIn className="w-5 h-5" />
-          <span>Sign in with Google</span>
-        </button>
+          <span>{isLoading ? 'Signing in...' : 'Sign in with Google'}</span>
+        </GoogleButton>
         {error && <ErrorMessage>{error}</ErrorMessage>}
       </div>
     </AuthContainer>
@@ -91,5 +75,3 @@ const GoogleAuth = () => {
 };
 
 export default GoogleAuth;
-
-

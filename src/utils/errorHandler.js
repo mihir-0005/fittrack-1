@@ -1,32 +1,34 @@
-import { ERROR_MESSAGES } from './constants';
+import { ERROR_MESSAGES } from '../config/constants';
 
 export const handleApiError = (error) => {
+  console.error('API Error:', {
+    status: error.response?.status,
+    data: error.response?.data,
+    message: error.message
+  });
+
   if (error.response) {
     // Server responded with error
     const status = error.response.status;
-    const message = error.response.data?.message || ERROR_MESSAGES.SERVER_ERROR;
+    const message = error.response.data?.message;
 
     switch (status) {
       case 401:
-        // Handle unauthorized error (e.g., clear local storage and redirect to login)
-        localStorage.clear();
-        window.location.href = '/';
-        return ERROR_MESSAGES.AUTH_ERROR;
-      
+        return new Error(message || ERROR_MESSAGES.AUTH_ERROR);
       case 404:
-        return ERROR_MESSAGES.NOT_FOUND;
-      
+        return new Error(message || ERROR_MESSAGES.NOT_FOUND);
       case 400:
-        return message || ERROR_MESSAGES.VALIDATION_ERROR;
-      
+        return new Error(message || ERROR_MESSAGES.VALIDATION_ERROR);
       default:
-        return message || ERROR_MESSAGES.SERVER_ERROR;
+        return new Error(message || ERROR_MESSAGES.SERVER_ERROR);
     }
-  } else if (error.request) {
-    // Request made but no response received
-    return ERROR_MESSAGES.NETWORK_ERROR;
-  } else {
-    // Something else happened
-    return error.message || ERROR_MESSAGES.SERVER_ERROR;
   }
+
+  if (error.request) {
+    // Request made but no response
+    return new Error(ERROR_MESSAGES.NETWORK_ERROR);
+  }
+
+  // Something else happened
+  return new Error(error.message || ERROR_MESSAGES.SERVER_ERROR);
 };
