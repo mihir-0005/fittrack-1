@@ -10,6 +10,7 @@ const corsConfig = {
     'Authorization', 
     'X-Requested-With', 
     'Accept',
+    'Access-Control-Allow-Origin',
     'Access-Control-Allow-Credentials'
   ],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],

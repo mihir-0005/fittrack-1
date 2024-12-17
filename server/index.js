@@ -20,11 +20,27 @@ const initializeServer = async () => {
     await connectDatabase();
     console.log('Database connection initialized');
 
+    // CORS configuration
     app.use(cors(corsConfig));
+    
+    // Request parsing middleware
     app.use(express.json({ limit: '50mb' }));
     app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+    
+    // Session middleware
     app.use(session(sessionConfig));
+    
+    // Request logging
     app.use(requestLogger);
+
+    // Set security headers
+    app.use((req, res, next) => {
+      res.setHeader('Access-Control-Allow-Origin', 'https://flourishing-basbousa-b3c0d9.netlify.app');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+      next();
+    });
 
     // API Routes
     app.use('/api', routes);
@@ -37,6 +53,7 @@ const initializeServer = async () => {
       });
     });
 
+    // Error handling
     app.use(errorHandler);
 
     app.listen(PORT, () => {

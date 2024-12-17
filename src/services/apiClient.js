@@ -6,7 +6,8 @@ const apiClient = axios.create({
   ...API_CONFIG,
   headers: {
     ...API_CONFIG.headers,
-    'Access-Control-Allow-Credentials': true
+    'Access-Control-Allow-Origin': 'https://flourishing-basbousa-b3c0d9.netlify.app',
+    'Access-Control-Allow-Credentials': 'true'
   }
 });
 
