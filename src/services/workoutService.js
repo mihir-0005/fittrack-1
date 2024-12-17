@@ -1,33 +1,34 @@
-import axios from 'axios';
+import apiClient from './api/client';
+import { ENDPOINTS } from './api/endpoints';
 
-const API_URL = import.meta.env.VITE_API_URL ;
+export const workoutService = {
+  create: async (workoutData) => {
+    try {
+      const response = await apiClient.post(ENDPOINTS.workouts.base, workoutData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating workout:', error);
+      throw error;
+    }
+  },
 
-export const createWorkout = async (workoutData) => {
-  try {
-    const response = await axios.post(`${API_URL}/workouts`, workoutData);
-    return response.data.data;
-  } catch (error) {
-    console.error('Error creating workout:', error);
-    throw error;
-  }
-};
+  getByUser: async (userId) => {
+    try {
+      const response = await apiClient.get(ENDPOINTS.workouts.byUser(userId));
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching workouts:', error);
+      throw error;
+    }
+  },
 
-export const getWorkouts = async (userId) => {
-  try {
-    const response = await axios.get(`${API_URL}/workouts/user/${userId}`);
-    return response.data.data;
-  } catch (error) {
-    console.error('Error fetching workouts:', error);
-    throw error;
-  }
-};
-
-export const deleteWorkout = async (workoutId) => {
-  try {
-    const response = await axios.delete(`${API_URL}/workouts/${workoutId}`);
-    return response.data.data;
-  } catch (error) {
-    console.error('Error deleting workout:', error);
-    throw error;
+  delete: async (workoutId) => {
+    try {
+      const response = await apiClient.delete(ENDPOINTS.workouts.byId(workoutId));
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting workout:', error);
+      throw error;
+    }
   }
 };

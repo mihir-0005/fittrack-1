@@ -27,7 +27,7 @@ export default function OnboardingForm() {
       };
 
       await axios.post(`${API_ENDPOINTS.BASE_URL}/api/users/onboarding`, userData);
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to save profile');
     } finally {

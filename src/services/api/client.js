@@ -1,23 +1,37 @@
 import axios from 'axios';
-import { API_CONFIG } from './config';
-import { handleApiError } from '../../utils/errorHandler';
+import { API_CONFIG, getAuthHeader } from './config';
 
 const apiClient = axios.create(API_CONFIG);
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('googleToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    config.headers = {
+      ...config.headers,
+      ...getAuthHeader()
+    };
     return config;
   },
-  (error) => Promise.reject(handleApiError(error))
+  (error) => Promise.reject(error)
 );
 
 apiClient.interceptors.response.use(
   (response) => response.data,
-  (error) => Promise.reject(handleApiError(error))
+  (error) => {
+    console.error('API Error:', {
+      endpoint: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      data: error.response?.data
+    });
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem('googleToken');
+      localStorage.removeItem('userData');
+      window.location.href = '/';
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 export default apiClient;

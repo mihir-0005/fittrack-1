@@ -1,5 +1,5 @@
 import apiClient from '../api/client';
-import { ENDPOINTS } from '../api/config';
+import { ENDPOINTS } from '../api/endpoints';
 
 export const saveUserProfile = async (userData) => {
   try {
