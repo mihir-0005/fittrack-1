@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Fingerprint, Loader } from 'lucide-react';
 import { startRegistration } from '@simplewebauthn/browser';
+import { authService } from '../services/auth/authService';
 
 export default function BiometricSetup({ onSetupComplete }) {
   const [loading, setLoading] = useState(false);
@@ -13,27 +14,14 @@ export default function BiometricSetup({ onSetupComplete }) {
       
       const userData = JSON.parse(localStorage.getItem('userData'));
       
-      // Get registration options from server
-      const optionsRes = await fetch(`https://fittrack-1-yefe.onrender.com/api/auth/register/${userData.googleId}/challenge`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-      const options = await optionsRes.json();
+      // Get registration options
+      const options = await authService.setupBiometrics(userData.googleId);
 
       // Start registration process
       const credential = await startRegistration(options);
 
-      // Verify registration with server
-      const verificationRes = await fetch(`https://fittrack-1-yefe.onrender.com/api/auth/register/${userData.googleId}/verify`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ credential }),
-        credentials: 'include'
-      });
-
-      const verification = await verificationRes.json();
+      // Verify registration
+      const verification = await authService.verifyBiometricRegistration(userData.googleId, credential);
 
       if (verification.verified) {
         onSetupComplete();

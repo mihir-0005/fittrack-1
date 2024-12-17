@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { LogIn } from 'lucide-react';
-import { 
-  fetchGoogleUserProfile, 
-  validateGoogleProfile, 
-  prepareUserData 
-} from '../services/auth/googleAuthService';
-import { saveUserProfile } from '../services/auth/userService';
+import { authService } from '../services/auth/authService';
 import { AuthContainer, ErrorMessage, GoogleButton } from './styles/AuthStyles';
 
 const GoogleAuth = () => {
@@ -23,19 +18,7 @@ const GoogleAuth = () => {
         throw new Error('No access token received');
       }
 
-      // Fetch and validate Google profile
-      const userProfile = await fetchGoogleUserProfile(accessToken);
-      validateGoogleProfile(userProfile);
-
-      // Prepare and save user data
-      const userData = prepareUserData(userProfile);
-      await saveUserProfile(userData);
-
-      // Store auth data
-      localStorage.setItem('userData', JSON.stringify(userData));
-      localStorage.setItem('googleToken', accessToken);
-
-      // Redirect to home
+      await authService.authenticateWithGoogle(accessToken);
       window.location.href = '/home';
     } catch (error) {
       console.error('Authentication error:', error);
@@ -48,7 +31,7 @@ const GoogleAuth = () => {
   const login = useGoogleLogin({
     onSuccess: handleSuccess,
     onError: () => setError('Google sign in failed'),
-    scope: 'email profile https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.heart_rate.read https://www.googleapis.com/auth/fitness.sleep.read'
+    scope: 'email profile'
   });
 
   return (
