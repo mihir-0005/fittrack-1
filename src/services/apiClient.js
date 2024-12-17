@@ -3,7 +3,11 @@ import { API_ENDPOINTS, API_CONFIG } from '../config/apiConfig';
 
 const apiClient = axios.create({
   baseURL: API_ENDPOINTS.BASE_URL,
-  ...API_CONFIG
+  ...API_CONFIG,
+  headers: {
+    ...API_CONFIG.headers,
+    'Access-Control-Allow-Credentials': true
+  }
 });
 
 // Request interceptor

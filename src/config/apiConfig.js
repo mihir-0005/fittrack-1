@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com';
+const API_BASE_URL = 'https://fittrack-1-yefe.onrender.com';
 
 export const API_ENDPOINTS = {
   BASE_URL: API_BASE_URL,

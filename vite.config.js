@@ -20,12 +20,9 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    proxy: {
-      '/api': {
-        target: process.env.VITE_API_URL || 'https://fittrack-1-yefe.onrender.com',
-        changeOrigin: true,
-        secure: true
-      }
+    cors: {
+      origin: ['https://fittrack-1-yefe.onrender.com'],
+      credentials: true
     }
   }
 });
